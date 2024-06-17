@@ -1,0 +1,269 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'blog/main.css' %}">
+
+    {% if title %}
+        <title>BLOGAPI - {{ title }}</title>
+    {% else %}
+        <title>BLOGAPI</title>
+    {% endif %}
+    <style type="text/css">
+        body{
+            background-color: #efefef;
+        }
+        div.fix{
+            width: 100px;
+        }
+        .col-md-8{
+            background-color: #efefef;
+        }
+        .post_box {
+		background: #ffffff;
+	    border: 1px solid #dddddd;
+	    border-radius: 7px;
+	    margin-bottom: 20px;
+	    font-size: 20px;
+	    font-family: 'Padauk', sans-serif;
+	}
+	.post_header{
+		position: relative;
+	    padding: 10px 20px 10px 5px;
+	    display: flex;
+
+	}
+	.post_header::before {
+		position: absolute;
+		content: "";
+		bottom: 0;
+		left: 1%;
+		width: 98%;
+		height: 1px;
+		background: #ddd;
+	}
+	.post_header_left {
+		position: relative;
+	    flex: 1;
+	   	padding: 5px 7px 4px 7px;
+	   	display: flex;
+	}
+
+	.post_header_left_userprofile_image {
+		position: relative;
+		width: 70px;
+		height: 70px;
+		border-radius: 50%;
+	}
+
+	.rounded_circle_img {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border-radius: 50%;
+	}
+	.post_header_left_userprofile_fact {
+		position: relative;
+		width: auto;
+		height: 70px;
+	    display: flex;
+	    flex-flow: column wrap;
+	    justify-content: left;
+	    align-items: flex-start;
+	    padding: 0 7px;
+	}
+	.user_name {
+		text-decoration: none;
+		font-size: 1.05em;
+		font-weight: 250;
+		letter-spacing: .02rem;
+		padding: 3px 0;
+	    text-align: left;
+	    color:#123456;
+	    transition: text .1s ease-out;
+	}
+	.user_name:hover {
+		text-decoration: underline;
+	}
+	small.date {
+		font-style: italic;
+	    font-size: 0.7em;
+	    font-family: 'Padauk', sans-serif;
+		opacity: .6;
+	}
+	.post_header_right {
+		position: relative;
+	    flex: 1;
+	}
+	.post_body {
+	}
+	.article {
+		display: flex;
+		flex-flow: column wrap;
+	}
+	p.article-content {
+		padding: 2px 40px 3px 35px;
+		line-height: 1.09rem;
+		letter-spacing: 0.1rem;
+        font-size: 0.8em;
+	    font-family: 'Padauk', sans-serif;
+		height: 220px;
+		transition: height .2s;
+		overflow-y: auto;
+	}
+	p.comment-content {
+		padding: 2px 40px 3px 35px;
+		line-height: 1.09rem;
+		letter-spacing: 0.1rem;
+        font-size: 0.8em;
+	    font-family: 'Padauk', sans-serif;
+		transition: height .2s;
+		overflow-y: auto;
+	}
+
+	p.article-content.see_more {
+		height: var(--y);
+	}
+
+	.see_more_btn {
+		margin-bottom: 12px;
+		margin-left: 35px;
+		text-align: center;
+		text-transform: capitalize;
+		border-radius: 5px;
+		width: 100px;
+		display: inline-block;
+		text-decoration: none;
+		padding: 5px 8px 5px 8px;
+		color: #000;
+		font-size: 10px;
+		border: 1px solid rgba(113, 61, 206, 1);
+		transition: background .1s, color .3s;
+		cursor: pointer;
+	}
+
+	.see_more_btn:hover {
+
+	}
+	a.title {
+		color: #9b59b6;
+		display: block;
+		padding: 0px 0 5px 0;
+		text-decoration: none;
+		font-size: 18px;
+		font-weight: 450;
+	}
+    </style>
+</head>
+<body>
+    <header class="site-header">
+      <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <div class="container">
+          <a class="navbar-brand mr-4" href="{% url 'blog-home' %}">BLOGAPI</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarToggle">
+            <div class="navbar-nav mr-auto">
+              <a class="nav-item nav-link" href="{% url 'blog-home' %}">Feed
+              {% if user.is_authenticated %}
+                <span class="badge badge-light">{{ posts.count }}</span>
+              {% endif %}
+              </a>
+                {% if request.user.is_staff %}
+                    <a href="{% url 'admin:index' %}" class="nav-item nav-link">Admin</a>
+                {% endif %}
+
+                    <form class="form-inline" action="{% url 'search' %}" method="get">
+                      <input class="form-control mr-sm-2" name="q" type="text" placeholder="Search" aria-label="Search">
+                      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+
+            </div>
+
+
+            <!-- Navbar Right Side -->
+            <div class="navbar-nav">
+              {% if user.is_authenticated %}
+                <a class="nav-item nav-link" href="{% url 'post-create' %}">New Post</a>
+                <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+                <a class="nav-item nav-link" href="https://springzephyr.pythonanywhere.com/resume">About</a>
+                <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+                <!--<a class="nav-item nav-link" href="{% url "post_feed" %}">Subscribe</a>-->
+              {% else %}
+                <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+                <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main role="main" class="container">
+      <div class="row">
+        <div class="col-md-8">
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+          {% block content %}{% endblock %}
+        </div>
+        <div class="col-md-4">
+          <div class="content-section">
+                  <p class='text-muted' align='center'>
+                  <i class='fab fa-python' style='font-size:36px;color:#000'></i>
+                  <i class='fab fa-html5' style='font-size:36px;color:#000'></i>
+                  <i class='fab fa-linux' style='font-size:36px;color:#000'></i>
+                  <i class='fab fa-css3-alt' style='font-size:36px;color:#000'></i>
+                  <i class='fab fa-react' style='font-size:36px;color:#000'></i>
+                  <ul class="list-group">
+                  <li class="list-group-item list-group-item-light">
+                  <p align='center'><strong>BLOGAPI version 1.1</strong></p>
+                  </li>
+                  </ul>
+                  </p>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+	const btns = document.querySelectorAll('.see_more_btn');
+	const boxs = document.querySelectorAll('.article-content');
+	console.log(btns);
+	for (let box = 0; box < boxs.length; box ++) {
+			boxs[box].style.setProperty('--y', boxs[box].scrollHeight + "px");
+			if( boxs[box].scrollHeight == boxs[box].clientHeight){
+				boxs[box].nextElementSibling.style.display = 'none';
+			}
+
+			}
+	for(let btn = 0; btn < btns.length ; btn++) {
+		btns[btn].addEventListener('click', function(){
+
+			this.previousElementSibling.classList.toggle('see_more');
+			if(this.previousElementSibling.classList.contains('see_more')){
+			    this.innerHTML = "See Less";
+			    console.log(this.innerHTML);
+			}else{
+			    this.innerHTML = "See More";
+			}
+		});
+	}
+
+</script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </body>
+</html>
